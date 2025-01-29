@@ -41,5 +41,23 @@ namespace WEB.Controllers
             }
             return View(category);
         }
+
+        [HttpGet]
+        public ActionResult Details(int? id)
+        {
+            if (id > 0)
+            {
+                Category category = _categoryService.GetById(id);
+
+                if (category != null)
+                {
+                    return View(category);
+                }
+
+                return HttpNotFound();
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

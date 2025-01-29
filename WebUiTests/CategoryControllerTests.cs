@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Xml.XPath;
 using WEB.Controllers;
 using Xunit;
 
@@ -15,38 +16,20 @@ namespace WebUiTests
 {
     public class CategoryControllerTests
     {
+        Mock<IcategoryService> mock;
+        CategoryController categoryController;
+        public CategoryControllerTests()
+        {
+            mock = new Mock<IcategoryService>();
+            categoryController = new CategoryController(mock.Object);
+        }
 
-        //[Fact]
-        //public void Index_Method_Positive()
-        //{
-        //    // Arrenge 
-
-        //    ApplicationDBContext db = new ApplicationDBContext();
-        //    ICategoryRepository categoryRepository = new CategoryRepository(db);
-        //    IcategoryService categoryService = new CategoryService(categoryRepository);
-        //    CategoryController categoryController = new CategoryController(categoryService);
-        //    List<Category> categories = new List<Category>()
-        //    {
-        //        new Category(){Name = "Mens Were",Rating = 5},
-        //        new Category(){Name = "Kids Were",Rating = 4}
-        //    };
-
-        //    // Act 
-
-        //    ActionResult result = categoryController.Index();
-        //    ViewResult view = (ViewResult)result;
-        //    List<Category> list = view.Model as List<Category>;
-
-        //    // Assert
-
-        //    Assert.Equal(categories.Count,list.Count);
-        //}
         [Fact]
         public void Index_ReturnViewResult_WithCategory()
         {
             // Arrenge
-            Mock<IcategoryService> mock = new Mock<IcategoryService>();
-            CategoryController categoryController = new CategoryController(mock.Object);
+            //Mock<IcategoryService> mock = new Mock<IcategoryService>();
+            //CategoryController categoryController = new CategoryController(mock.Object);
 
             var categories = new List<Category>()
             {
@@ -68,7 +51,7 @@ namespace WebUiTests
 
             var model = result.Model as IEnumerable<Category>;
 
-            Assert.Equal(2,model.Count());
+            Assert.Equal(2, model.Count());
 
         }
 
@@ -76,11 +59,11 @@ namespace WebUiTests
         public void Create_Returns_ViewResult()
         {
             // Arrenge
-            Mock<IcategoryService> mock = new Mock<IcategoryService>();
-            CategoryController controller = new CategoryController(mock.Object);
+            //Mock<IcategoryService> mock = new Mock<IcategoryService>();
+            //CategoryController controller = new CategoryController(mock.Object);
 
             // Act
-            var result = controller.Create() as ViewResult;
+            var result = categoryController.Create() as ViewResult;
 
             // Arrenge
 
@@ -90,12 +73,12 @@ namespace WebUiTests
         }
 
         [Fact]
-        public void Create_ReturnRedirectToIndex()
+        public void Create_ViewModel_ReturnRedirectToIndex()
         {
             // Arrenge 
 
-            Mock<IcategoryService> mock = new Mock<IcategoryService>();
-            CategoryController categoryController = new CategoryController(mock.Object);
+            //Mock<IcategoryService> mock = new Mock<IcategoryService>();
+            //CategoryController categoryController = new CategoryController(mock.Object);
 
             Category category = new Category()
             {
@@ -114,6 +97,98 @@ namespace WebUiTests
 
             Assert.Equal("Index", result.RouteValues["action"]);
 
+        }
+
+        [Fact]
+        public void Create_InValidModel_ReturnResultWithModel()
+        {
+            // Arrenge 
+
+            //Mock<IcategoryService> mock = new Mock<IcategoryService>();
+            //CategoryController categoryController = new CategoryController(mock.Object);
+
+            Category category = new Category();
+
+            categoryController.ModelState.AddModelError("Name", "Name is Required");
+
+            // Act
+            var result = categoryController.Create(category) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+
+            Assert.Equal(category, result.Model);
+
+        }
+
+        [Fact]
+        public void Details_ZeroId_ReturnRedirectToIndex()
+        {
+            // Arrenge 
+
+            //Mock<IcategoryService> mock = new Mock<IcategoryService>();
+            //CategoryController controller = new CategoryController(mock.Object);
+
+            // Act 
+            var result = categoryController.Details(0) as RedirectToRouteResult;
+
+            // Assert
+
+            Assert.NotNull(result);
+
+            Assert.Equal("Index", result.RouteValues["Action"]);
+        }
+
+
+        [Fact]
+        public void Details_ValidExestingId_ReturnViewWithModel()
+        {
+            // Arrenge 
+
+            //Mock<IcategoryService> mock = new Mock<IcategoryService>();
+            //CategoryController controller = new CategoryController(mock.Object);
+
+            Category category = new Category()
+            {
+                Id = 1,
+                Name = "Mobile",
+                Rating = 4
+            };
+
+            mock.Setup(s => s.GetById(1)).Returns(category);
+
+            // Act 
+            var result = categoryController.Details(1) as ViewResult;
+
+            // Assert
+
+            Assert.NotNull(result);
+
+            var model = result.Model as Category;
+
+            Assert.Equal("Mobile", model.Name);
+        }
+
+        [Fact]
+        public void Details_NotExistingId_ReturnNotFoundHttp()
+        {
+            // Arrenge 
+
+            //Mock<IcategoryService> mock = new Mock<IcategoryService>();
+            //CategoryController controller = new CategoryController(mock.Object);
+
+            Category category = null;
+
+            mock.Setup(s => s.GetById(1)).Returns(category);
+
+            // Act 
+            var result = categoryController.Details(1) as HttpNotFoundResult;
+
+            // Assert
+
+            Assert.NotNull(result);
+
+            Assert.IsType<HttpNotFoundResult>(result);
         }
 
     }

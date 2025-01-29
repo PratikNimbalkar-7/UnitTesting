@@ -27,5 +27,10 @@ namespace Repositories
         {
             return _Context.Categories.ToList();
         }
+
+        public Category GetById(int? id)
+        {
+            return _Context.Categories.Find(id);
+        }
     }
 }

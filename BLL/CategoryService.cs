@@ -26,5 +26,10 @@ namespace BLL
         {
             return _repository.GetAll();
         }
+
+        public Category GetById(int? id)
+        {
+            return _repository.GetById(id);
+        }
     }
 }
