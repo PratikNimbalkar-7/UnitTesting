@@ -57,7 +57,12 @@
     <Compile Include="Migrations\202501271142263_First.Designer.cs">
       <DependentUpon>202501271142263_First.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202501291056430_Add Table Product.cs" />
+    <Compile Include="Migrations\202501291056430_Add Table Product.Designer.cs">
+      <DependentUpon>202501291056430_Add Table Product.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Product.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +72,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202501271142263_First.resx">
       <DependentUpon>202501271142263_First.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501291056430_Add Table Product.resx">
+      <DependentUpon>202501291056430_Add Table Product.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
