@@ -106,5 +106,65 @@ namespace WebUiTests
             Assert.Equal(product, result.Model);
         }
 
+        [Fact]
+        public void Details_ZeroId_ReturnRedirectToIndex()
+        {
+            // Arrenge 
+            Mock<IProductService> mock = new Mock<IProductService>();
+            ProductController productController = new ProductController(mock.Object);
+
+
+            // Act
+            var result = productController.GetById(0) as RedirectToRouteResult;
+
+            // Assert
+            Assert.NotNull(result);
+
+            Assert.Equal("Index", result.RouteValues["action"]);
+        }
+
+        [Fact]
+        public void Details_ValidExestingId_ReturnViewWithModel()
+        {
+            Mock<IProductService> mock = new Mock<IProductService>();
+            ProductController productController = new ProductController(mock.Object);
+
+            Product product = new Product()
+            {
+                Id = 1,
+                ProductName = "Mobile",
+                Rating = 5
+            };
+
+            mock.Setup(s => s.GetById(1)).Returns(product);
+
+            var result = productController.GetById(1) as ViewResult;
+
+            Assert.NotNull(result);
+
+            var model = result.Model as Product;
+
+            Assert.Equal("Mobile", model.ProductName);
+        }
+
+        [Fact]
+        public void Details_NotExistingId_ReturnNotFoundHttp()
+        {
+            // Arrenge 
+
+            Mock<IProductService> mock = new Mock<IProductService>();
+            ProductController productController = new ProductController(mock.Object);
+
+            Product product = null;
+
+            mock.Setup(s => s.GetById(1)).Returns(product);
+
+            // Act 
+            var result = productController.GetById(1) as HttpNotFoundResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
     }
 }
